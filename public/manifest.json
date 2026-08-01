@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "LiteNav Tabs",
+  "version": "1.0.0",
+  "description": "A modern, offline bookmark manager and new tab page.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "storage"
+  ]
+}

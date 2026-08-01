@@ -1,0 +1,5 @@
+{
+  "name": "Web Bookmark Manager",
+  "description": "A minimalist, customizable bookmark manager with WebDAV sync, drag-and-drop, and offline support.",
+  "requestFramePermissions": []
+}
