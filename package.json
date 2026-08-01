@@ -1,12 +1,12 @@
 {
-  "name": "react-example",
+  "name": "litenav-tabs",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && npx esbuild server.ts --platform=node --bundle --format=cjs --outdir=dist",
-    "start": "node dist/server.js",
+    "build": "tsc --noEmit && vite build",
+    "start": "NODE_ENV=production tsx server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
