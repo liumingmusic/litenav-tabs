@@ -254,7 +254,7 @@ export default function LandingPage() {
           <span className="text-xl font-bold tracking-tight">LiteNav Tabs</span>
         </div>
         <div className="flex gap-4 sm:gap-6 items-center">
-          <a href="./" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.online}</a>
+          <a href="#/app" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.online}</a>
           <a href="#features" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.features}</a>
           <a href="#guide" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.guide}</a>
           
@@ -319,7 +319,7 @@ export default function LandingPage() {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="mt-14 flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
           >
-            <a href="./" className={`px-8 py-4 ${isDark ? 'bg-white text-black hover:bg-gray-100 shadow-[0_0_40px_rgba(255,255,255,0.1)]' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-[0_0_40px_rgba(0,0,0,0.1)]'} rounded-full font-semibold text-lg flex items-center justify-center gap-2 transition-colors`}>
+            <a href="#/app" className={`px-8 py-4 ${isDark ? 'bg-white text-black hover:bg-gray-100 shadow-[0_0_40px_rgba(255,255,255,0.1)]' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-[0_0_40px_rgba(0,0,0,0.1)]'} rounded-full font-semibold text-lg flex items-center justify-center gap-2 transition-colors`}>
               {t.heroBtn1} <ArrowRight size={20} />
             </a>
             <a href="#download" className={`px-8 py-4 ${isDark ? 'bg-white/5 border-white/10 text-white hover:bg-white/10' : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'} border rounded-full font-semibold text-lg flex items-center justify-center gap-2 transition-colors backdrop-blur-sm`}>
@@ -737,7 +737,7 @@ export default function LandingPage() {
                   <p className={`text-sm mb-8 leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t.dlWebDesc}</p>
                   
                   <div className="mt-auto">
-                    <a href="./" className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-blue-600 text-white hover:bg-blue-700'} transition-colors`}>
+                    <a href="#/app" className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-blue-600 text-white hover:bg-blue-700'} transition-colors`}>
                       {t.dlBtnOnline} <ArrowRight size={16} />
                     </a>
                   </div>
@@ -790,7 +790,7 @@ export default function LandingPage() {
             {t.footerText}
           </div>
           <div className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'} flex gap-4 font-medium`}>
-            <a href="./" className={`${isDark ? 'hover:text-white' : 'hover:text-slate-800'} transition-colors`}>{t.startApp}</a>
+            <a href="#/app" className={`${isDark ? 'hover:text-white' : 'hover:text-slate-800'} transition-colors`}>{t.startApp}</a>
           </div>
         </div>
       </footer>

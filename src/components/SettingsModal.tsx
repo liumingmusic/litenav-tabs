@@ -343,7 +343,7 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
             </div>
             <div className="pt-4 border-t border-gray-100">
               <a
-                href="./introduce"
+                href="#/introduce"
                 className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-indigo-100 transition-colors group"
               >
                 <span className="flex items-center gap-2 text-sm font-medium text-blue-700">
