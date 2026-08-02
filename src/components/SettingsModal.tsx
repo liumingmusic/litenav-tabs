@@ -341,6 +341,28 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                 </li>
               </ul>
             </div>
+
+            <div className="space-y-3 pt-2">
+              <h3 className="text-sm font-semibold text-gray-900 px-1 border-l-2 border-blue-500 pl-2">版本历史</h3>
+              <div className="space-y-2">
+                {[
+                  { v: '2.0.0', tag: '当前', title: '能力跃迁与产品化', items: '⌘K 命令面板 · 本地搜索 · 标签体系 · 回收站 · 多空间 · 端到端加密 · 浏览器导入 · WebDAV 自动同步 · 官方介绍页上线' },
+                  { v: '1.0.0', tag: '基石', title: '本地优先的新标签页', items: '本地存储 · 无限嵌套文件夹 · 拖拽排版 · 布局无极定制 · WebDAV 同步 · 隐私红线承诺' },
+                ].map((r, idx) => (
+                  <div key={r.v} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${idx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>v{r.v}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-900">{r.title}</span>
+                        <span className="text-[10px] text-gray-400">{r.tag}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{r.items}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="pt-4 border-t border-gray-100">
               <a
                 href="#/introduce"

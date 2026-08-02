@@ -104,6 +104,37 @@ const dict = {
     trust1: "100% 本地存储",
     trust2: "0 追踪上报",
     trust3: "永久免费",
+    navHistory: "发展史",
+    changelogEyebrow: "VERSION HISTORY",
+    changelogTitle: "产品演进之路",
+    changelogSubtitle: "从 1.0.0 基石到 2.0.0 跃迁——每一次迭代，都让工具更私密、更强大、更懂你。",
+    changelogV1Tag: "基石版本",
+    changelogV1Title: "本地优先的新标签页",
+    changelogV1Desc: "一切的起点：把数据真正交还给用户。",
+    changelogV1Items: [
+      "本地优先架构：书签 100% 存浏览器，断网也能用",
+      "无限嵌套文件夹：层级化收纳，告别平铺杂乱",
+      "快速收集：粘贴网址自动解析标题与图标",
+      "Markdown 备注：为每个书签撰写富文本说明",
+      "拖拽排版：长按自由排序与跨组移动",
+      "布局无极定制：间距 / 宽度 / 图标尺寸全可调",
+      "WebDAV 同步：把书签备份到你自己的网盘",
+      "隐私红线：免费 / 无后端 / 不埋点 / 不加账号",
+    ],
+    changelogV2Tag: "当前版本",
+    changelogV2Title: "能力跃迁与产品化",
+    changelogV2Desc: "从导航面板，进化为你的私人信息中枢。",
+    changelogV2Items: [
+      "⌘K 命令面板：双手不离键盘，搜索 / 跳转 / 新建一气呵成",
+      "本地即时搜索：标题 / 网址 / 备注 / 标签毫秒级过滤",
+      "标签体系：跨分组弱关联归类，多维度检索",
+      "回收站：误删可恢复，保留期自定义",
+      "多空间：工作 / 生活 / 项目数据完全隔离",
+      "端到端加密：AES-GCM 加密同步与备份",
+      "浏览器书签导入：Chrome / Edge / Firefox 一键去重",
+      "WebDAV 自动同步：变更自动落盘到你的网盘",
+      "官方介绍页与关于页上线，版本体系统一",
+    ],
   },
   en: {
     title1: "Reimagine Your",
@@ -206,6 +237,37 @@ const dict = {
     trust1: "100% Local Storage",
     trust2: "0 Tracking",
     trust3: "Free Forever",
+    navHistory: "History",
+    changelogEyebrow: "VERSION HISTORY",
+    changelogTitle: "Product Evolution",
+    changelogSubtitle: "From the 1.0.0 foundation to the 2.0.0 leap — every iteration makes the tool more private, more powerful, more yours.",
+    changelogV1Tag: "Foundation",
+    changelogV1Title: "A Privacy-First New Tab",
+    changelogV1Desc: "Where it all began: handing your data back to you.",
+    changelogV1Items: [
+      "Local-first architecture: bookmarks live 100% in your browser, works offline",
+      "Infinite nested folders: hierarchical organization, no more flat mess",
+      "Quick capture: paste a URL to auto-resolve its title & icon",
+      "Markdown notes: rich-text descriptions for every bookmark",
+      "Drag layout: long-press to freely reorder and move across groups",
+      "Stepless theming: spacing / width / icon size all adjustable",
+      "WebDAV sync: back up your bookmarks to your own drive",
+      "Privacy red lines: free / no backend / no tracking / no accounts",
+    ],
+    changelogV2Tag: "Current",
+    changelogV2Title: "Power Leap & Productization",
+    changelogV2Desc: "From a new-tab panel into your private information hub.",
+    changelogV2Items: [
+      "⌘K Command Palette: jump, search and create without leaving the keys",
+      "Instant local search: filter by title, URL, note or tag in milliseconds",
+      "Tag system: weak-linked cross-group tagging for multi-dimensional find",
+      "Recycle Bin: recover soft-deleted items with a retention window you set",
+      "Multi-Profile: Work / Life / Project data fully isolated",
+      "End-to-End Encryption: AES-GCM encrypted sync & backups",
+      "Browser import: one-click dedup import from Chrome / Edge / Firefox",
+      "WebDAV auto-sync: changes auto-push to your own drive",
+      "Official landing & about pages shipped; version system unified",
+    ],
   }
 };
 
@@ -257,6 +319,7 @@ export default function LandingPage() {
           <a href="#/app" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.online}</a>
           <a href="#features" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.features}</a>
           <a href="#guide" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.guide}</a>
+          <a href="#changelog" className={`text-sm font-medium ${isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} transition-colors hidden sm:block`}>{t.navHistory}</a>
           
           <div className="flex items-center gap-2 border-l border-gray-500/20 pl-4 sm:pl-6 ml-2 sm:ml-0">
             <button 
@@ -439,6 +502,84 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        {/* Version History / Changelog Timeline */}
+        <section id="changelog" className="mt-40">
+          <div className="mb-16 text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${isDark ? 'border-blue-500/30 bg-blue-500/10' : 'border-blue-200 bg-blue-50'} text-blue-500 text-xs font-medium tracking-wide uppercase mb-6`}
+            >
+              <Sparkles size={14} /> {t.changelogEyebrow}
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-6"
+            >
+              {t.changelogTitle}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`text-lg ${isDark ? 'text-gray-400' : 'text-slate-600'}`}
+            >
+              {t.changelogSubtitle}
+            </motion.p>
+          </div>
+
+          <div className="max-w-4xl mx-auto relative">
+            {/* Vertical spine */}
+            <div className={`absolute left-[18px] sm:left-1/2 top-2 bottom-2 w-px ${isDark ? 'bg-white/10' : 'bg-slate-200'} sm:-translate-x-1/2`} />
+
+            {[
+              { version: '1.0.0', tag: t.changelogV1Tag, title: t.changelogV1Title, desc: t.changelogV1Desc, items: t.changelogV1Items, current: false },
+              { version: '2.0.0', tag: t.changelogV2Tag, title: t.changelogV2Title, desc: t.changelogV2Desc, items: t.changelogV2Items, current: true },
+            ].map((v, i) => (
+              <motion.div
+                key={v.version}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="relative pl-12 sm:pl-0 sm:grid sm:grid-cols-2 sm:gap-12 items-start mb-14 last:mb-0"
+              >
+                {/* Node dot */}
+                <div className={`absolute left-[18px] sm:left-1/2 top-2 w-3.5 h-3.5 rounded-full -translate-x-1/2 ring-4 z-10 ${v.current ? 'bg-gradient-to-br from-blue-500 to-indigo-600 ring-blue-500/30' : isDark ? 'bg-white/40 ring-[#050505]' : 'bg-slate-400 ring-slate-50'}`} />
+
+                {/* Version label side */}
+                <div className={`${i % 2 === 0 ? 'sm:text-right sm:pr-6' : 'sm:col-start-2 sm:pl-6'}`}>
+                  <div className={`inline-flex items-center gap-2 mb-2 ${i % 2 === 0 ? 'sm:flex-row-reverse' : ''}`}>
+                    <span className={`text-3xl font-bold tracking-tight ${v.current ? 'text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-indigo-300' : isDark ? 'text-white/80' : 'text-slate-700'}`}>v{v.version}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${v.current ? 'bg-blue-500/15 text-blue-500' : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'}`}>{v.tag}</span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-1">{v.title}</h3>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{v.desc}</p>
+                </div>
+
+                {/* Highlights side */}
+                <div className={`mt-4 sm:mt-0 ${i % 2 === 0 ? 'sm:col-start-2 sm:pl-6' : 'sm:pr-6'}`}>
+                  <ul className={`space-y-2.5 ${i % 2 === 0 ? '' : 'sm:text-right'}`}>
+                    {v.items.map((it: string, j: number) => (
+                      <li key={j} className={`flex items-start gap-2.5 ${i % 2 === 0 ? '' : 'sm:flex-row-reverse sm:text-right'}`}>
+                        <div className={`mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full ${v.current ? 'bg-blue-500' : isDark ? 'bg-white/40' : 'bg-slate-400'}`} />
+                        <span className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>{it}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className={`text-center text-xs mt-12 ${isDark ? 'text-gray-600' : 'text-slate-400'}`}>
+            {lang === 'zh' ? '想要更早的版本记录？完整发布说明可在仓库 Release 中查看。' : 'Looking for earlier releases? Full release notes live in the repository Releases.'}
+          </p>
         </section>
 
         {/* Features Bento Grid */}
