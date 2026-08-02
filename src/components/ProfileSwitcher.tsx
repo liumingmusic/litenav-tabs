@@ -35,7 +35,7 @@ export function ProfileSwitcher({ compact }: { compact?: boolean }) {
       >
         <Layers size={18} />
         {compact ? (
-          <span className="text-[10px] font-medium leading-none mt-1 truncate w-full text-center px-0.5">{active?.name}</span>
+          <span className="text-[10px] font-medium leading-tight mt-1 text-center break-words max-w-[26px] mx-auto">{active?.name}</span>
         ) : (
           <span className="hidden sm:inline text-sm font-medium max-w-[80px] truncate">{active?.name}</span>
         )}
