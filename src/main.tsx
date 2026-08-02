@@ -9,17 +9,19 @@ const root = createRoot(rootElement);
 
 const render = () => {
   const hash = window.location.hash;
+  const path = window.location.pathname;
   const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'ms-browser-extension:';
   
-  // Show Landing Page if hash is empty (and not in extension), or explicitly #/promo
-  if (hash === '#/promo' || (!isExtension && hash !== '#/app')) {
+  // Show Landing Page only at the intro route (/introduce, #/introduce, or legacy #/promo).
+  // Everything else (empty hash, #/app, or an extension) shows the App directly.
+  const isIntro = path.includes('/introduce') || hash === '#/introduce' || hash === '#/promo';
+  if (isIntro) {
     root.render(
       <StrictMode>
         <LandingPage />
       </StrictMode>
     );
   } else {
-    // Show App if it's an extension or explicitly #/app
     root.render(
       <StrictMode>
         <App />
