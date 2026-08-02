@@ -105,7 +105,7 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
   const customGradientSettings = useStore(state => state.customGradientSettings);
   const setCustomGradientSettings = useStore(state => state.setCustomGradientSettings);
 
-  const [activeTab, setActiveTab] = useState<'general' | 'layout' | 'theme' | 'local' | 'webdav' | 'tags' | 'space' | 'privacy' | 'about'>('general');
+  const [activeTab, setActiveTab] = useState<'appearance' | 'layout' | 'data' | 'sync' | 'about'>('layout');
   
   const [gradientColors, setGradientColors] = useState<{id: string, color: string, position: number}[]>(
     customGradientSettings?.colors || [
@@ -279,14 +279,10 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
   return (
     <Drawer isOpen={isOpen} onClose={onClose} title="全局设置" className="max-w-[520px]">
       <div className="flex border-b border-gray-100 mb-6 gap-1 sm:gap-2 overflow-x-auto pb-1 hide-scrollbar">
-        <button onClick={() => setActiveTab('general')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'general' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>常规功能</button>
-        <button onClick={() => setActiveTab('layout')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'layout' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>布局交互</button>
-        <button onClick={() => setActiveTab('theme')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'theme' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>主题外观</button>
-        <button onClick={() => setActiveTab('local')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'local' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>本地备份</button>
-        <button onClick={() => setActiveTab('webdav')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'webdav' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>WebDAV</button>
-        <button onClick={() => setActiveTab('tags')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'tags' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>标签</button>
-        <button onClick={() => setActiveTab('space')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'space' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>空间</button>
-        <button onClick={() => setActiveTab('privacy')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'privacy' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>隐私</button>
+        <button onClick={() => setActiveTab('appearance')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'appearance' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>外观</button>
+        <button onClick={() => setActiveTab('layout')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'layout' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>布局</button>
+        <button onClick={() => setActiveTab('data')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'data' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>数据</button>
+        <button onClick={() => setActiveTab('sync')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'sync' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>同步</button>
         <button onClick={() => setActiveTab('about')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'about' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>关于</button>
       </div>
 
@@ -345,11 +341,23 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                 </li>
               </ul>
             </div>
+            <div className="pt-4 border-t border-gray-100">
+              <a
+                href="./introduce"
+                className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-indigo-100 transition-colors group"
+              >
+                <span className="flex items-center gap-2 text-sm font-medium text-blue-700">
+                  <Sparkles size={15} /> 查看产品介绍页
+                </span>
+                <span className="text-blue-400 group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+              <p className="text-xs text-gray-400 mt-2">了解 LiteNav Tabs 的设计理念、隐私承诺与全部特性。</p>
+            </div>
           </motion.div>
         )}
 
-        {activeTab === 'general' && (
-          <motion.div key="general" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+        {activeTab === 'layout' && (
+          <motion.div key="layout" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
             <section>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">核心功能设置</h3>
               <div className="space-y-5">
@@ -435,12 +443,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                 </div>
               </div>
             </section>
-          </motion.div>
-        )}
 
-        {activeTab === 'layout' && (
-          <motion.div key="layout" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
-            <section>
+            <section className="pt-4 border-t border-gray-100">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">布局规则</h3>
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-4">
                 <div>
@@ -506,8 +510,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
           </motion.div>
         )}
 
-        {activeTab === 'theme' && (
-          <motion.div key="theme" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+        {activeTab === 'appearance' && (
+          <motion.div key="appearance" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
             <section>
               <h3 className="text-sm font-semibold text-gray-900 mb-2">背景图片</h3>
               <div className="flex items-center gap-3 mb-4">
@@ -727,9 +731,48 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
           </motion.div>
         )}
 
-        {activeTab === 'local' && (
-          <motion.div key="local" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+        {activeTab === 'data' && (
+          <motion.div key="data" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
             <section>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><TagIcon size={15} /> 标签管理</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {tags.map(t => (
+                  <div key={t.id} className="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full text-white text-xs" style={{ backgroundColor: t.color }}>
+                    <input value={t.name} onChange={(e) => updateTag(t.id, { name: e.target.value })} className="bg-transparent outline-none w-16 text-white placeholder-white/70" />
+                    <button onClick={() => deleteTag(t.id)} className="hover:bg-black/20 rounded-full p-0.5"><X size={12} /></button>
+                  </div>
+                ))}
+                {tags.length === 0 && <span className="text-xs text-gray-400">还没有标签</span>}
+              </div>
+              <div className="flex gap-2">
+                <input value={newTagInput} onChange={(e) => setNewTagInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { addTag(newTagInput); setNewTagInput(''); } }} placeholder="新建标签名称" className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500" />
+                <button onClick={() => { addTag(newTagInput); setNewTagInput(''); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">添加</button>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">标签是跨分组的弱关联归类。给书签打标签后，可在搜索框直接按标签名检索。</p>
+            </section>
+
+            <section className="pt-4 border-t border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><Layers size={15} /> 多空间（互不干扰的数据集）</h3>
+              <div className="space-y-2">
+                {profiles.map(p => (
+                  <div key={p.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <button onClick={() => switchProfile(p.id)} className={`flex-1 text-left px-2 py-1 rounded-lg flex items-center gap-2 transition-colors ${p.id === activeProfileId ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-700'}`}>
+                      {p.id === activeProfileId && <Check size={14} className="text-blue-600" />}
+                      <Layers size={15} /> <span className="text-sm font-medium truncate">{p.name}</span>
+                    </button>
+                    <button onClick={() => { const n = window.prompt('重命名空间', p.name); if (n != null) renameProfile(p.id, n); }} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"><Pencil size={13} /></button>
+                    {profiles.length > 1 && (
+                      <button onClick={() => { if (window.confirm(`删除空间「${p.name}」？该空间内的书签将一并删除且不可恢复。`)) deleteProfile(p.id); }} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={13} /></button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => { const n = window.prompt('新空间名称', '新空间'); if (n != null) addProfile(n); }} className="mt-3 w-full py-2 flex items-center justify-center gap-1 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"><Plus size={14} /> 新建空间</button>
+              <p className="text-xs text-gray-500 mt-3">每个空间拥有独立的书签、分组、标签与回收站，可分别绑定不同 WebDAV 账号同步。</p>
+            </section>
+
+            <section className="pt-4 border-t border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">本地备份与导入</h3>
               <p className="text-sm text-gray-500 mb-4">将当前空间的全部书签、分组、标签导出为备份文件，或从备份文件中合并恢复（自动跳过重复网址）。</p>
               <div className="flex flex-wrap gap-3">
                 <button onClick={exportLocal} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors flex items-center gap-1">
@@ -752,8 +795,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
           </motion.div>
         )}
 
-        {activeTab === 'webdav' && (
-          <motion.div key="webdav" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+        {activeTab === 'sync' && (
+          <motion.div key="sync" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
             <section>
               <p className="text-xs text-gray-500 mb-4 leading-relaxed">配置您的 WebDAV 服务以实现跨设备书签同步。建议使用坚果云等稳定服务。</p>
               <form onSubmit={handleSaveWebDav} className="space-y-3">
@@ -793,57 +836,7 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                 )}
               </div>
             </section>
-          </motion.div>
-        )}
-        {activeTab === 'tags' && (
-          <motion.div key="tags" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
-            <section>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><TagIcon size={15} /> 标签管理</h3>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map(t => (
-                  <div key={t.id} className="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full text-white text-xs" style={{ backgroundColor: t.color }}>
-                    <input value={t.name} onChange={(e) => updateTag(t.id, { name: e.target.value })} className="bg-transparent outline-none w-16 text-white placeholder-white/70" />
-                    <button onClick={() => deleteTag(t.id)} className="hover:bg-black/20 rounded-full p-0.5"><X size={12} /></button>
-                  </div>
-                ))}
-                {tags.length === 0 && <span className="text-xs text-gray-400">还没有标签</span>}
-              </div>
-              <div className="flex gap-2">
-                <input value={newTagInput} onChange={(e) => setNewTagInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { addTag(newTagInput); setNewTagInput(''); } }} placeholder="新建标签名称" className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500" />
-                <button onClick={() => { addTag(newTagInput); setNewTagInput(''); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">添加</button>
-              </div>
-              <p className="text-xs text-gray-500 mt-3">标签是跨分组的弱关联归类。给书签打标签后，可在搜索框直接按标签名检索。</p>
-            </section>
-          </motion.div>
-        )}
-
-        {activeTab === 'space' && (
-          <motion.div key="space" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
-            <section>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><Layers size={15} /> 多空间（互不干扰的数据集）</h3>
-              <div className="space-y-2">
-                {profiles.map(p => (
-                  <div key={p.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                    <button onClick={() => switchProfile(p.id)} className={`flex-1 text-left px-2 py-1 rounded-lg flex items-center gap-2 transition-colors ${p.id === activeProfileId ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-700'}`}>
-                      {p.id === activeProfileId && <Check size={14} className="text-blue-600" />}
-                      <Layers size={15} /> <span className="text-sm font-medium truncate">{p.name}</span>
-                    </button>
-                    <button onClick={() => { const n = window.prompt('重命名空间', p.name); if (n != null) renameProfile(p.id, n); }} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"><Pencil size={13} /></button>
-                    {profiles.length > 1 && (
-                      <button onClick={() => { if (window.confirm(`删除空间「${p.name}」？该空间内的书签将一并删除且不可恢复。`)) deleteProfile(p.id); }} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={13} /></button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <button onClick={() => { const n = window.prompt('新空间名称', '新空间'); if (n != null) addProfile(n); }} className="mt-3 w-full py-2 flex items-center justify-center gap-1 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"><Plus size={14} /> 新建空间</button>
-              <p className="text-xs text-gray-500 mt-3">每个空间拥有独立的书签、分组、标签与回收站，可分别绑定不同 WebDAV 账号同步。</p>
-            </section>
-          </motion.div>
-        )}
-
-        {activeTab === 'privacy' && (
-          <motion.div key="privacy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
-            <section>
+            <section className="pt-4 border-t border-gray-100">
               <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-1"><Lock size={15} /> 端到端加密（可选）</h3>
               <p className="text-xs text-gray-500 mb-3">开启后，同步到 WebDAV 与导出的备份都会被口令加密，连网盘服务商也无法读取你的书签。口令仅存于本次会话，刷新页面需重新输入。</p>
               <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer">
