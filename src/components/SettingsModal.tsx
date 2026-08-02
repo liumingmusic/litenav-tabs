@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Drawer } from "./Drawer";
 import { useStore } from "../lib/store";
@@ -63,8 +62,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const setFooterColor = useStore(state => state.setFooterColor);
   const footerText = useStore(state => state.footerText);
   const setFooterText = useStore(state => state.setFooterText);
-  const searchEngineUrl = useStore(state => state.searchEngineUrl);
-  const setSearchEngineUrl = useStore(state => state.setSearchEngineUrl);
   const searchEngines = useStore(state => state.searchEngines) || [];
   const setSearchEngines = useStore(state => state.setSearchEngines);
   const activeSearchEngineId = useStore(state => state.activeSearchEngineId);

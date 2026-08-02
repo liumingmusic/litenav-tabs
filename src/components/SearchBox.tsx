@@ -6,13 +6,12 @@ export function SearchBox() {
   const [query, setQuery] = useState("");
   const searchEngines = useStore(state => state.searchEngines) || [];
   const activeSearchEngineId = useStore(state => state.activeSearchEngineId);
-  const legacySearchEngineUrl = useStore(state => state.searchEngineUrl) || "https://www.google.com/search";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
-    let targetUrl = legacySearchEngineUrl;
+    let targetUrl = "https://www.google.com/search";
     if (activeSearchEngineId && searchEngines.length > 0) {
       const activeEngine = searchEngines.find(engine => engine.id === activeSearchEngineId);
       if (activeEngine) {

@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Modal } from "./Modal";
 import { useStore, Group } from "../lib/store";

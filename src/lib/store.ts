@@ -70,7 +70,6 @@ interface AppState {
   backgroundGradient: string | null;
   customGradientSettings: CustomGradientSettings | null;
   footerText: string;
-  searchEngineUrl: string;
   searchEngines?: SearchEngine[];
   activeSearchEngineId?: string;
   containerWidth: number;
@@ -92,7 +91,6 @@ interface AppState {
   setBackgroundGradient: (gradient: string | null) => void;
   setCustomGradientSettings: (settings: CustomGradientSettings | null) => void;
   setFooterText: (text: string) => void;
-  setSearchEngineUrl: (url: string) => void;
   setSearchEngines: (engines: SearchEngine[]) => void;
   setActiveSearchEngineId: (id: string) => void;
   setContainerWidth: (width: number) => void;
@@ -151,7 +149,6 @@ export const useStore = create<AppState>()(
       backgroundGradient: null,
       customGradientSettings: null,
       footerText: '',
-      searchEngineUrl: 'https://www.google.com/search',
       searchEngines: [
         { id: 'google', name: '谷歌 (Google)', url: 'https://www.google.com/search' },
         { id: 'baidu', name: '百度', url: 'https://www.baidu.com/s' },
@@ -177,7 +174,6 @@ export const useStore = create<AppState>()(
       setBackgroundGradient: (gradient) => set({ backgroundGradient: gradient, backgroundImage: null }),
       setCustomGradientSettings: (settings) => set({ customGradientSettings: settings }),
       setFooterText: (text) => set({ footerText: text }),
-      setSearchEngineUrl: (url) => set({ searchEngineUrl: url }),
       setSearchEngines: (engines) => set({ searchEngines: engines }),
       setActiveSearchEngineId: (id) => set({ activeSearchEngineId: id }),
       setContainerWidth: (width) => set({ containerWidth: width }),

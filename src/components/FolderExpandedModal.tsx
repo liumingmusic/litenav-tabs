@@ -1,8 +1,8 @@
-import React from "react";
+import { useState, useEffect, type MouseEvent } from "react";
 import { useStore } from "../lib/store";
 import { LinkItem } from "../lib/store";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ArrowUpToLine, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2 } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -26,7 +26,7 @@ interface FolderExpandedProps {
   isOpen: boolean;
   onClose: () => void;
   onEditLink: (link: LinkItem) => void;
-  onContextMenu: (e: React.MouseEvent, link: LinkItem) => void;
+  onContextMenu: (e: MouseEvent, link: LinkItem) => void;
   onAddLink: () => void;
 }
 
@@ -52,11 +52,11 @@ export function FolderExpandedModal({
     return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
   };
 
-  const [internalFolder, setInternalFolder] = React.useState<LinkItem | null>(
+  const [internalFolder, setInternalFolder] = useState<LinkItem | null>(
     folder,
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (folder) {
       setInternalFolder(folder);
     }
