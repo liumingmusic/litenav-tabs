@@ -323,7 +323,7 @@ export default function App() {
             </div>
             
             <div className="mt-4 pt-4 border-t border-white/40 flex flex-col gap-2 px-1">
-               <ProfileSwitcher />
+               <ProfileSwitcher compact />
                <button
                  onClick={() => setIsNavigationOpen(true)}
                  className="w-full p-2 text-slate-600 hover:text-blue-600 bg-white/50 hover:bg-white/70 backdrop-blur-md border border-white/50 rounded-lg transition-all shadow-sm flex flex-col items-center justify-center gap-1"

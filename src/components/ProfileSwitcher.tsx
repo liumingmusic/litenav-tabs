@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Layers, Check, Plus, Pencil, Trash2 } from "lucide-react";
 import { useStore } from "../lib/store";
 
-export function ProfileSwitcher() {
+export function ProfileSwitcher({ compact }: { compact?: boolean }) {
   const profiles = useStore(state => state.profiles);
   const activeProfileId = useStore(state => state.activeProfileId);
   const switchProfile = useStore(state => state.switchProfile);
@@ -27,11 +27,18 @@ export function ProfileSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(o => !o)}
-        className="p-2 text-slate-500 hover:text-blue-600 bg-white/40 hover:bg-white/60 backdrop-blur-2xl backdrop-saturate-[150%] border border-white/50 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+        className={compact
+          ? "w-full p-2 text-slate-600 hover:text-blue-600 bg-white/50 hover:bg-white/70 backdrop-blur-md border border-white/50 rounded-lg transition-all shadow-sm flex flex-col items-center justify-center gap-1"
+          : "p-2 text-slate-500 hover:text-blue-600 bg-white/40 hover:bg-white/60 backdrop-blur-2xl backdrop-saturate-[150%] border border-white/50 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+        }
         title="切换空间"
       >
         <Layers size={18} />
-        <span className="hidden sm:inline text-sm font-medium max-w-[80px] truncate">{active?.name}</span>
+        {compact ? (
+          <span className="text-[10px] font-medium leading-none mt-1 truncate w-full text-center px-0.5">{active?.name}</span>
+        ) : (
+          <span className="hidden sm:inline text-sm font-medium max-w-[80px] truncate">{active?.name}</span>
+        )}
       </button>
 
       {open && (
