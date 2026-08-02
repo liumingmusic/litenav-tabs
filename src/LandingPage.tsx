@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Compass, Download, LayoutGrid, Shield, Zap, Sparkles, ArrowRight, Cloud, Palette, Globe, Sun, Moon, Link as LinkIcon, Chrome, MousePointerClick, FolderPlus, Search, Settings } from 'lucide-react';
+import { Compass, Download, LayoutGrid, Shield, Zap, Sparkles, ArrowRight, Cloud, Palette, Globe, Sun, Moon, Link as LinkIcon, Chrome, MousePointerClick, FolderPlus, Search, Settings, Command, Tags, Trash2, Layers, Lock, RefreshCw } from 'lucide-react';
 
 const dict = {
   zh: {
@@ -12,7 +12,7 @@ const dict = {
     download: "获取拓展",
     heroBtn1: "体验网页版",
     heroBtn2: "安装指南",
-    release: "Release 1.0.0 is out",
+    release: "Release 2.0.0 is out",
     featureTitle: "回归工具本质",
     featureSubtitle: "强大的底层搭配克制的交互，满足您的高阶定制需求。",
     guide: "使用指南",
@@ -82,6 +82,28 @@ const dict = {
     p4d: "跨设备漫游由你自己的网盘（坚果云/Nextcloud 等）完成，密钥与数据都在你手里。",
     p5: "不埋点、不追踪、不加账号",
     p5d: "没有任何分析统计上报，也不需要注册登录——打开即用。",
+    whatsnewEyebrow: "VERSION 2.0",
+    whatsnewTitle: "2.0 全新升级",
+    whatsnewSubtitle: "从导航面板进化为你的私人信息中枢——更聪明、更私密、更强大。",
+    n1Title: "⌘K 命令面板",
+    n1Desc: "键盘党福音：一键搜索、跳转、新建，双手不离键盘。",
+    n2Title: "本地即时搜索",
+    n2Desc: "标题 / 网址 / 备注 / 标签名毫秒级过滤，离线也能用。",
+    n3Title: "标签体系",
+    n3Desc: "跨分组弱关联归类，让同一书签在多个维度被轻松找到。",
+    n4Title: "回收站",
+    n4Desc: "误删不再可怕，软删除可恢复，保留期由你设定。",
+    n5Title: "多空间",
+    n5Desc: "工作 / 生活 / 项目完全隔离，每个空间独立数据与同步。",
+    n6Title: "端到端加密",
+    n6Desc: "AES-GCM 加密同步与备份，连网盘服务商也无法读取。",
+    n7Title: "浏览器书签导入",
+    n7Desc: "一键导入 Chrome / Edge / Firefox 书签，自动去重合并。",
+    n8Title: "WebDAV 自动同步",
+    n8Desc: "数据变动自动落盘到你的网盘，多端始终一致。",
+    trust1: "100% 本地存储",
+    trust2: "0 追踪上报",
+    trust3: "永久免费",
   },
   en: {
     title1: "Reimagine Your",
@@ -92,7 +114,7 @@ const dict = {
     download: "Get Extension",
     heroBtn1: "Try Web Version",
     heroBtn2: "Install Guide",
-    release: "Release 1.0.0 is out",
+    release: "Release 2.0.0 is out",
     featureTitle: "Back to Basics",
     featureSubtitle: "Powerful foundations with restrained interactions to meet your advanced customization needs.",
     guide: "Guide",
@@ -162,6 +184,28 @@ const dict = {
     p4d: "Cross-device sync runs on your own drive (Nutstore / Nextcloud). Keys and data stay with you.",
     p5: "No analytics, no tracking, no accounts",
     p5d: "Zero telemetry reporting, and no sign-up needed — just open and use.",
+    whatsnewEyebrow: "VERSION 2.0",
+    whatsnewTitle: "2.0 — A Major Upgrade",
+    whatsnewSubtitle: "From a new-tab panel to your private information hub — smarter, more private, more powerful.",
+    n1Title: "⌘K Command Palette",
+    n1Desc: "For keyboard lovers: jump, search and create instantly without leaving the keys.",
+    n2Title: "Instant Local Search",
+    n2Desc: "Filter by title, URL, note or tag in milliseconds, fully offline.",
+    n3Title: "Tag System",
+    n3Desc: "Weak-linked tags across groups let one bookmark live in many dimensions.",
+    n4Title: "Recycle Bin",
+    n4Desc: "Soft-delete with recovery and a retention window you control.",
+    n5Title: "Multi-Profile",
+    n5Desc: "Separate Work / Life / Project spaces, each with isolated data and sync.",
+    n6Title: "End-to-End Encryption",
+    n6Desc: "AES-GCM encrypted sync & backups; even your drive can't read them.",
+    n7Title: "Browser Bookmark Import",
+    n7Desc: "One-click import from Chrome / Edge / Firefox, auto-deduped.",
+    n8Title: "WebDAV Auto-Sync",
+    n8Desc: "Changes auto-push to your own drive — every device stays consistent.",
+    trust1: "100% Local Storage",
+    trust2: "0 Tracking",
+    trust3: "Free Forever",
   }
 };
 
@@ -282,6 +326,24 @@ export default function LandingPage() {
               {t.heroBtn2} <Download size={20} />
             </a>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.5 }}
+            className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm"
+          >
+            {[
+              { label: t.trust1, icon: Shield },
+              { label: t.trust2, icon: Sparkles },
+              { label: t.trust3, icon: Cloud },
+            ].map((s, i) => (
+              <div key={i} className={`flex items-center gap-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                <s.icon size={16} className="text-blue-500" />
+                <span className="font-medium">{s.label}</span>
+              </div>
+            ))}
+          </motion.div>
         </section>
 
         {/* Browser Mockup Section (Visual Anchor) */}
@@ -320,6 +382,64 @@ export default function LandingPage() {
           {/* Gradient Overlay for blend */}
           <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-[#050505]' : 'from-slate-50'} via-transparent border-none`}></div>
         </motion.div>
+
+        {/* What's New in 2.0 */}
+        <section className="mt-40">
+          <div className="mb-16 text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${isDark ? 'border-blue-500/30 bg-blue-500/10' : 'border-blue-200 bg-blue-50'} text-blue-500 text-xs font-medium tracking-wide uppercase mb-6`}
+            >
+              <Sparkles size={14} /> {t.whatsnewEyebrow}
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-6"
+            >
+              {t.whatsnewTitle}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`text-lg ${isDark ? 'text-gray-400' : 'text-slate-600'}`}
+            >
+              {t.whatsnewSubtitle}
+            </motion.p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { icon: Command, title: t.n1Title, desc: t.n1Desc },
+              { icon: Search, title: t.n2Title, desc: t.n2Desc },
+              { icon: Tags, title: t.n3Title, desc: t.n3Desc },
+              { icon: Trash2, title: t.n4Title, desc: t.n4Desc },
+              { icon: Layers, title: t.n5Title, desc: t.n5Desc },
+              { icon: Lock, title: t.n6Title, desc: t.n6Desc },
+              { icon: Download, title: t.n7Title, desc: t.n7Desc },
+              { icon: RefreshCw, title: t.n8Title, desc: t.n8Desc },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05, duration: 0.4 }}
+                className={`p-6 rounded-[1.75rem] ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/[0.07]' : 'bg-white border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)]'} border flex flex-col gap-3 transition-all`}
+              >
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                  <item.icon size={22} />
+                </div>
+                <h3 className="text-base font-bold leading-snug">{item.title}</h3>
+                <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
 
         {/* Features Bento Grid */}
         <section id="features" className="mt-32">
@@ -419,7 +539,7 @@ export default function LandingPage() {
                               <Compass className="text-white w-5 h-5" />
                            </div>
                            <div>
-                             <div className="text-sm font-bold flex items-center gap-2">LiteNav Tabs <span className="text-[9px] bg-blue-500 text-white px-1 py-0.5 rounded">v1.0</span></div>
+                             <div className="text-sm font-bold flex items-center gap-2">LiteNav Tabs <span className="text-[9px] bg-blue-500 text-white px-1 py-0.5 rounded">v2.0</span></div>
                              <div className={`text-[10px] mt-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>A clean, privacy-first new tab for everyone.</div>
                            </div>
                         </div>

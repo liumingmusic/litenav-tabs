@@ -297,7 +297,7 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                 <Sparkles size={32} className="relative" />
               </div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">LiteNav Tabs</h2>
-              <p className="text-xs font-semibold text-white bg-blue-600 rounded-full px-3 py-1 mt-1 shadow-sm">Release 1.0.0</p>
+              <p className="text-xs font-semibold text-white bg-blue-600 rounded-full px-3 py-1 mt-1 shadow-sm">Release 2.0.0</p>
             </div>
             
             <div className="space-y-3">
@@ -308,8 +308,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                     <Shield size={16} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">完全支持离线与本地化</h4>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">数据基于本地域(LocalStorage)安全存储，无网络下依然丝滑可用。原生支持 WebDAV 协议进行云端同步，让书签跨设备自由流转。</p>
+                  <h4 className="text-sm font-medium text-gray-900">隐私优先 · 100% 本地</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">数据存于浏览器本地，断网也能用；通过你自己的 WebDAV 同步，可选 AES-GCM 端到端加密。</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -317,8 +317,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                     <Zap size={16} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">极速响应的丝滑交互</h4>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">提供拖拽排序、快捷键增强、高度可定制的布局模式。零冗余功能与接口请求，回归新标签页作为导航工具最纯粹的本质。</p>
+                  <h4 className="text-sm font-medium text-gray-900">丝滑交互 · ⌘K 命令面板</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">拖拽排序、本地即时搜索、键盘流操作，毫秒级响应，回归导航工具最纯粹的本质。</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -326,8 +326,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                     <Package size={16} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">高频办公特化</h4>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">集成沉浸式文件夹、富文本节点说明、内置多引擎聚合检索等高阶特性，解决重度用户的整理与检索痛点。</p>
+                  <h4 className="text-sm font-medium text-gray-900">高阶整理能力</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">无限嵌套文件夹、跨分组标签体系、多空间隔离与回收站防误删，解决重度用户的整理痛点。</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -335,8 +335,8 @@ export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalPro
                     <Database size={16} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">完全免费，保护隐私</h4>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">无充值套路，无需注册账号。不搜集用户隐私，所有请求您的浏览器直接发起。支持您随意导出输入 JSON 备份迁移。</p>
+                  <h4 className="text-sm font-medium text-gray-900">完全免费 · 无追踪</h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">无账号、无广告、无遥测上报；支持一键从浏览器导入书签，JSON 备份随时迁移。</p>
                   </div>
                 </li>
               </ul>
