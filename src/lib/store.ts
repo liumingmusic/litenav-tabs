@@ -692,6 +692,11 @@ export const useStore = create<AppState>()(
     {
       name: 'bookmark-manager-storage',
       version: 2,
+      // 关键修复：版本号不一致时必须保留旧数据。
+      // 若省略 migrate，Zustand 会向 merge 传入 undefined，导致返回空状态——
+      // 每次发版版本号对不上就会清空用户全部书签与布局（已踩坑）。
+      // 即便将来改 version，也必须在此写真正的迁移逻辑，绝不能删掉这个 migrate。
+      migrate: (persistedState: any) => persistedState,
       partialize: (state) => {
         // Persist profile container + settings, NOT the working data arrays
         // (those live inside profileData and are restored via merge).
@@ -699,6 +704,8 @@ export const useStore = create<AppState>()(
         return rest;
       },
       merge: (persisted: any, current: AppState) => {
+        // 防御：无持久化数据时保持当前（默认）状态，绝不掉进"清空"分支
+        if (!persisted) return current;
         const p = persisted || {};
         // migration from v1 (top-level groups/links, no profiles)
         let profiles: Profile[] = p.profiles && p.profiles.length ? p.profiles : [{ id: 'default', name: '默认空间' }];
@@ -708,7 +715,17 @@ export const useStore = create<AppState>()(
         }
         let activeProfileId = (p.activeProfileId && profiles.find(x => x.id === p.activeProfileId)) ? p.activeProfileId : profiles[0].id;
         if (!profileData[activeProfileId]) {
-          profileData[activeProfileId] = emptyProfile();
+          // 兼容 v1 顶层结构：优先从顶层 groups/links 重建，避免误清空
+          if (p.groups || p.links) {
+            profileData[activeProfileId] = {
+              groups: p.groups || [DEFAULT_GROUP],
+              links: p.links || [],
+              tags: p.tags || [],
+              trash: p.trash || [],
+            };
+          } else {
+            profileData[activeProfileId] = emptyProfile();
+          }
         }
         const ad = profileData[activeProfileId];
         return {
