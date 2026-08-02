@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Settings, Plus, LayoutGrid, Palette, Trash2, ExternalLink, Edit2, Maximize, Square, Compass } from 'lucide-react';
+import { Settings, Plus, LayoutGrid, Palette, Trash2, ExternalLink, Edit2, Maximize, Square, Compass, Command } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
 
@@ -32,6 +32,9 @@ import { FolderBlock } from './components/FolderBlock';
 import { LinkModal } from './components/LinkModal';
 import { GroupModal } from './components/GroupModal';
 import { SettingsModal } from './components/SettingsModal';
+import { CommandPalette } from './components/CommandPalette';
+import { TrashModal } from './components/TrashModal';
+import { ProfileSwitcher } from './components/ProfileSwitcher';
 import { NavigationModal } from './components/NavigationModal';
 import { FolderModal } from './components/FolderModal';
 import { FolderExpandedModal } from './components/FolderExpandedModal';
@@ -55,6 +58,7 @@ export default function App() {
   const footerText = useStore(state => state.footerText);
   const footerColor = useStore(state => state.footerColor);
   const linkLabelColor = useStore(state => state.linkLabelColor);
+  const linkSortMode = useStore(state => state.linkSortMode);
 
   const setBackgroundGradient = useStore(state => state.setBackgroundGradient);
   const setCustomGradientSettings = useStore(state => state.setCustomGradientSettings);
@@ -76,11 +80,23 @@ export default function App() {
   const [folderToEdit, setFolderToEdit] = useState<LinkItem | undefined>(undefined);
   const [expandedFolder, setExpandedFolder] = useState<LinkItem | null>(null);
 
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
+
   const [contextMenu, setContextMenu] = useState<{ x: number, y: number } | null>(null);
   const [linkContextMenu, setLinkContextMenu] = useState<{ x: number, y: number, link: LinkItem } | null>(null);
 
-  // Filter root items (links and folders)
-  const activeRootItems = links.filter(l => l.groupId === activeGroupId && !l.folderId).sort((a, b) => a.order - b.order);
+  // Filter root items (links and folders), then sort according to the chosen mode
+  const activeRootItems = React.useMemo(() => {
+    const base = links.filter(l => l.groupId === activeGroupId && !l.folderId);
+    if (linkSortMode === 'frequent') {
+      return [...base].sort((a, b) => (b.clickCount ?? 0) - (a.clickCount ?? 0) || a.order - b.order);
+    }
+    if (linkSortMode === 'recent') {
+      return [...base].sort((a, b) => (b.lastClickedAt ?? 0) - (a.lastClickedAt ?? 0) || a.order - b.order);
+    }
+    return base.sort((a, b) => a.order - b.order);
+  }, [links, activeGroupId, linkSortMode]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -103,6 +119,18 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeGroupId]);
+
+  // ⌘K / Ctrl+K opens the command palette
+  useEffect(() => {
+    const onPaletteKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandOpen(o => !o);
+      }
+    };
+    window.addEventListener('keydown', onPaletteKey);
+    return () => window.removeEventListener('keydown', onPaletteKey);
+  }, []);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -270,6 +298,15 @@ export default function App() {
             <Compass size={20} />
             <span className="hidden sm:inline text-sm font-medium">导航</span>
           </button>
+          <ProfileSwitcher />
+          <button
+            onClick={() => setIsCommandOpen(true)}
+            title="命令面板 (⌘K)"
+            className="p-2 text-slate-500 hover:text-blue-600 bg-white/40 hover:bg-white/60 backdrop-blur-2xl backdrop-saturate-[150%] border border-white/50 rounded-xl transition-all shadow-sm flex items-center gap-2"
+          >
+            <Command size={20} />
+            <span className="hidden sm:inline text-sm font-medium">命令</span>
+          </button>
           <button
             onClick={() => setIsSettingsOpen(true)}
             className="p-2 text-slate-500 hover:text-blue-600 bg-white/40 hover:bg-white/60 backdrop-blur-2xl backdrop-saturate-[150%] border border-white/50 rounded-xl transition-all shadow-sm flex items-center gap-2"
@@ -286,6 +323,7 @@ export default function App() {
             </div>
             
             <div className="mt-4 pt-4 border-t border-white/40 flex flex-col gap-2 px-1">
+               <ProfileSwitcher />
                <button
                  onClick={() => setIsNavigationOpen(true)}
                  className="w-full p-2 text-slate-600 hover:text-blue-600 bg-white/50 hover:bg-white/70 backdrop-blur-md border border-white/50 rounded-lg transition-all shadow-sm flex flex-col items-center justify-center gap-1"
@@ -293,6 +331,14 @@ export default function App() {
                >
                  <Compass size={18} />
                  <span className="text-[10px] font-medium leading-none mt-1">导航</span>
+               </button>
+               <button
+                 onClick={() => setIsCommandOpen(true)}
+                 className="w-full p-2 text-slate-600 hover:text-blue-600 bg-white/50 hover:bg-white/70 backdrop-blur-md border border-white/50 rounded-lg transition-all shadow-sm flex flex-col items-center justify-center gap-1"
+                 title="命令面板 (⌘K)"
+               >
+                 <Command size={18} />
+                 <span className="text-[10px] font-medium leading-none mt-1">命令</span>
                </button>
                <button
                  onClick={() => setIsSettingsOpen(true)}
@@ -381,8 +427,17 @@ export default function App() {
         </footer>
       )}
 
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} onOpenTrash={() => { setIsSettingsOpen(false); setIsTrashOpen(true); }} />
       <NavigationModal isOpen={isNavigationOpen} onClose={() => setIsNavigationOpen(false)} activeGroupId={activeGroupId} />
+      <CommandPalette
+        isOpen={isCommandOpen}
+        onClose={() => setIsCommandOpen(false)}
+        onAddLink={() => { setIsCommandOpen(false); if (activeGroupId) openAddLink(); else toast.error("请先选择或创建一个标签分组"); }}
+        onAddGroup={() => { setIsCommandOpen(false); openAddGroup(); }}
+        onOpenSettings={() => { setIsCommandOpen(false); setIsSettingsOpen(true); }}
+        onOpenTrash={() => { setIsCommandOpen(false); setIsTrashOpen(true); }}
+      />
+      <TrashModal isOpen={isTrashOpen} onClose={() => setIsTrashOpen(false)} />
       <GroupModal isOpen={isGroupModalOpen} onClose={() => setIsGroupModalOpen(false)} groupToEdit={groupToEdit} />
       {activeGroupId && (
         <>

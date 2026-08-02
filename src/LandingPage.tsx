@@ -70,6 +70,18 @@ const dict = {
     dlBtnStore: "即将上架 / Coming Soon",
     footerText: "P R I V A T E  &  P O W E R F U L",
     startApp: "开启应用",
+    privacyTitle: "零知识 · 数据只属于你",
+    privacySubtitle: "我们把隐私当成架构底线，而不是一句口号。以下是我们永远不会做的事：",
+    p1: "完全免费，永不收费",
+    p1d: "没有订阅、没有内购、没有广告，也不做任何诱导付费。",
+    p2: "没有后端服务器",
+    p2d: "我们不运营任何云端服务，你的书签不会经过我们的服务器。",
+    p3: "数据 100% 存你本机",
+    p3d: "书签与配置只保存在你浏览器的本地存储，断网也能用。",
+    p4: "同步只走你自己的 WebDAV",
+    p4d: "跨设备漫游由你自己的网盘（坚果云/Nextcloud 等）完成，密钥与数据都在你手里。",
+    p5: "不埋点、不追踪、不加账号",
+    p5d: "没有任何分析统计上报，也不需要注册登录——打开即用。",
   },
   en: {
     title1: "Reimagine Your",
@@ -138,6 +150,18 @@ const dict = {
     dlBtnStore: "Coming Soon",
     footerText: "P R I V A T E  &  P O W E R F U L",
     startApp: "Start App",
+    privacyTitle: "Zero-Knowledge · Your Data Stays Yours",
+    privacySubtitle: "We treat privacy as an architectural principle, not a slogan. Here is what we will never do:",
+    p1: "Free forever, no charges",
+    p1d: "No subscriptions, no in-app purchases, no ads, and no paywall tricks.",
+    p2: "No backend servers",
+    p2d: "We run no cloud service — your bookmarks never pass through our servers.",
+    p3: "100% stored on your device",
+    p3d: "Bookmarks and settings live only in your browser's local storage. Works fully offline.",
+    p4: "Sync only via your own WebDAV",
+    p4d: "Cross-device sync runs on your own drive (Nutstore / Nextcloud). Keys and data stay with you.",
+    p5: "No analytics, no tracking, no accounts",
+    p5d: "Zero telemetry reporting, and no sign-up needed — just open and use.",
   }
 };
 
@@ -540,6 +564,36 @@ export default function LandingPage() {
               </div>
             </div>
 
+          </div>
+        </section>
+
+        {/* Privacy Promise Section */}
+        <section id="privacy" className="mt-40">
+          <div className="mb-16 text-center max-w-3xl mx-auto">
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${isDark ? 'border-green-500/30 bg-green-500/10' : 'border-green-200 bg-green-50'} text-green-600 text-xs font-medium tracking-wide uppercase mb-6`}>
+              <Shield size={14} /> Privacy Promise
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">{t.privacyTitle}</h2>
+            <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t.privacySubtitle}</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { icon: Sparkles, title: t.p1, desc: t.p1d },
+              { icon: Cloud, title: t.p2, desc: t.p2d },
+              { icon: Shield, title: t.p3, desc: t.p3d },
+              { icon: LinkIcon, title: t.p4, desc: t.p4d },
+              { icon: MousePointerClick, title: t.p5, desc: t.p5d },
+            ].map((item, idx) => (
+              <div key={idx} className={`p-7 rounded-[2rem] ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/[0.07]' : 'bg-white border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]'} border flex flex-col gap-3 transition-all`}>
+                <item.icon className="text-green-500 w-8 h-8" />
+                <h3 className="text-lg font-bold">{item.title}</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{item.desc}</p>
+              </div>
+            ))}
+            <div className={`p-7 rounded-[2rem] ${isDark ? 'bg-gradient-to-br from-green-500/10 to-blue-500/5 border-white/10' : 'bg-gradient-to-br from-green-50 to-blue-50 border-slate-200'} border flex flex-col justify-center items-center text-center gap-2`}>
+              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>LiteNav Tabs</div>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>本地优先 · 隐私优先 · 永远免费</p>
+            </div>
           </div>
         </section>
 

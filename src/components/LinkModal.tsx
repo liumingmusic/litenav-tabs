@@ -4,7 +4,7 @@ import { Modal } from "./Modal";
 import { useStore, LinkItem } from "../lib/store";
 import { getRandomColor } from "../lib/utils";
 import MDEditor from '@uiw/react-md-editor';
-import { Settings, FileText, Upload, ListPlus } from 'lucide-react';
+import { Settings, FileText, Upload, ListPlus, Tag as TagIcon, X, Plus } from 'lucide-react';
 
 interface LinkModalProps {
   isOpen: boolean;
@@ -28,8 +28,12 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
   const [note, setNote] = useState("");
   const [batchUrls, setBatchUrls] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState(groupId);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [newTagName, setNewTagName] = useState("");
 
   const groups = useStore(state => state.groups);
+  const tags = useStore(state => state.tags) || [];
+  const addTag = useStore(state => state.addTag);
   const moveLinkToGroup = useStore(state => state.moveLinkToGroup);
   const activeGroup = groups.find(g => g.id === selectedGroupId);
   const defaultBgColor = activeGroup?.color || getRandomColor();
@@ -46,6 +50,8 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
         setSize(linkItem.size || '1x1');
         setNote(linkItem.note || "");
         setBatchUrls("");
+        setSelectedTagIds(linkItem.tagIds || []);
+        setNewTagName("");
       } else {
         setTitle("");
         setUrl("");
@@ -54,6 +60,8 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
         setSize('1x1');
         setNote("");
         setBatchUrls("");
+        setSelectedTagIds([]);
+        setNewTagName("");
       }
     }
   }, [isOpen, linkItem, groupId]); // Note: intentional omit of defaultBgColor to avoid overriding when opening
@@ -82,7 +90,8 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
           url: finalUrl,
           imageUrl: generatedImageUrl,
           backgroundColor: activeGroup?.color || getRandomColor(),
-          size: '1x1'
+          size: '1x1',
+          tagIds: []
         });
       });
       toast.success(`成功批量添加 ${urls.length} 个书签`);
@@ -99,13 +108,13 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
     const finalUrl = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
 
     if (linkItem) {
-      updateLink(linkItem.id, { title, url: finalUrl, imageUrl, backgroundColor: bgColor, size, note: note.trim() || undefined });
+      updateLink(linkItem.id, { title, url: finalUrl, imageUrl, backgroundColor: bgColor, size, note: note.trim() || undefined, tagIds: selectedTagIds });
       if (selectedGroupId !== linkItem.groupId) {
         moveLinkToGroup(linkItem.id, selectedGroupId);
       }
       toast.success("书签已更新");
     } else {
-      addLink({ groupId: selectedGroupId, folderId: targetFolderId, title, url: finalUrl, imageUrl: imageUrl || undefined, backgroundColor: bgColor, size, note: note.trim() || undefined });
+      addLink({ groupId: selectedGroupId, folderId: targetFolderId, title, url: finalUrl, imageUrl: imageUrl || undefined, backgroundColor: bgColor, size, note: note.trim() || undefined, tagIds: selectedTagIds });
       toast.success("书签已添加");
     }
     onClose();
@@ -255,6 +264,43 @@ export function LinkModal({ isOpen, onClose, groupId, linkItem, targetFolderId }
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                <TagIcon size={14} /> 标签（可多选，用于跨分组检索）
+              </label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {tags.map(t => (
+                  <button
+                    type="button"
+                    key={t.id}
+                    onClick={() => setSelectedTagIds(prev => prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id])}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${selectedTagIds.includes(t.id) ? 'text-white border-transparent' : 'text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                    style={selectedTagIds.includes(t.id) ? { backgroundColor: t.color } : undefined}
+                  >
+                    {t.name}
+                  </button>
+                ))}
+                {tags.length === 0 && <span className="text-xs text-gray-400">还没有标签，在下方新建一个</span>}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newTagName}
+                  onChange={(e) => setNewTagName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); const n = newTagName.trim(); if (n) { addTag(n); const t = useStore.getState().tags.find(x => x.name.toLowerCase() === n.toLowerCase()); if (t) setSelectedTagIds(prev => prev.includes(t.id) ? prev : [...prev, t.id]); setNewTagName(''); } } }}
+                  placeholder="新建标签后回车"
+                  className="flex-1 px-3 py-1.5 text-xs border border-gray-200 rounded-lg outline-none focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => { const n = newTagName.trim(); if (n) { addTag(n); const t = useStore.getState().tags.find(x => x.name.toLowerCase() === n.toLowerCase()); if (t) setSelectedTagIds(prev => prev.includes(t.id) ? prev : [...prev, t.id]); setNewTagName(''); } }}
+                  className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <Plus size={13} /> 新建
+                </button>
+              </div>
             </div>
           </div>
         )}

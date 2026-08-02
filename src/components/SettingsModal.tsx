@@ -3,15 +3,19 @@ import { AnimatePresence, motion } from "motion/react";
 import { Drawer } from "./Drawer";
 import { useStore } from "../lib/store";
 import { backupToWebDav, restoreFromWebDav } from "../lib/webdav";
+import { parseBrowserBookmarks } from "../lib/bookmarks-import";
+import { encryptJSON } from "../lib/crypto";
 import { gradients } from "../lib/gradients";
-import { Package, Shield, Zap, Sparkles, Database, Trash2, Plus } from "lucide-react";
+import { Package, Shield, Zap, Sparkles, Database, Trash2, Plus, Tag as TagIcon, Layers, Lock, RefreshCw, Clock, Filter, Check, X, Upload, Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenTrash?: () => void;
 }
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onOpenTrash }: SettingsModalProps) {
   const webdavConfig = useStore(state => state.webdavConfig);
   const setWebdavConfig = useStore(state => state.setWebdavConfig);
   const webdavSyncStatus = useStore(state => state.webdavSyncStatus);
@@ -67,10 +71,41 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const activeSearchEngineId = useStore(state => state.activeSearchEngineId);
   const setActiveSearchEngineId = useStore(state => state.setActiveSearchEngineId);
 
+  // P1-6 tags
+  const tags = useStore(state => state.tags) || [];
+  const addTag = useStore(state => state.addTag);
+  const updateTag = useStore(state => state.updateTag);
+  const deleteTag = useStore(state => state.deleteTag);
+  const [newTagInput, setNewTagInput] = useState("");
+
+  // P2-11 profiles
+  const profiles = useStore(state => state.profiles);
+  const activeProfileId = useStore(state => state.activeProfileId);
+  const switchProfile = useStore(state => state.switchProfile);
+  const addProfile = useStore(state => state.addProfile);
+  const renameProfile = useStore(state => state.renameProfile);
+  const deleteProfile = useStore(state => state.deleteProfile);
+
+  // P0-5 / P2-10 / P1-7 / P1-8
+  const webdavAutoSync = useStore(state => state.webdavAutoSync);
+  const setWebdavAutoSync = useStore(state => state.setWebdavAutoSync);
+  const encryptionEnabled = useStore(state => state.encryptionEnabled);
+  const setEncryptionEnabled = useStore(state => state.setEncryptionEnabled);
+  const encryptionPassphrase = useStore(state => state.encryptionPassphrase);
+  const setEncryptionPassphrase = useStore(state => state.setEncryptionPassphrase);
+  const linkSortMode = useStore(state => state.linkSortMode);
+  const setLinkSortMode = useStore(state => state.setLinkSortMode);
+  const trashRetentionDays = useStore(state => state.trashRetentionDays);
+  const setTrashRetentionDays = useStore(state => state.setTrashRetentionDays);
+  const trash = useStore(state => state.trash) || [];
+  const emptyTrash = useStore(state => state.emptyTrash);
+
+  const browserImportRef = useRef<HTMLInputElement>(null);
+
   const customGradientSettings = useStore(state => state.customGradientSettings);
   const setCustomGradientSettings = useStore(state => state.setCustomGradientSettings);
 
-  const [activeTab, setActiveTab] = useState<'general' | 'layout' | 'theme' | 'local' | 'webdav' | 'about'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'layout' | 'theme' | 'local' | 'webdav' | 'tags' | 'space' | 'privacy' | 'about'>('general');
   
   const [gradientColors, setGradientColors] = useState<{id: string, color: string, position: number}[]>(
     customGradientSettings?.colors || [
@@ -163,18 +198,23 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   };
 
-  const exportLocal = () => {
-    const data = {
-      groups: useStore.getState().groups,
-      links: useStore.getState().links
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const exportLocal = async () => {
+    const data = useStore.getState().getActiveProfileData();
+    let content = JSON.stringify(data, null, 2);
+    let filename = "litenav-backup.json";
+    if (encryptionEnabled) {
+      if (!encryptionPassphrase) { setStatus({ message: "请先在「隐私」中设置加密口令", type: "error" }); return; }
+      content = await encryptJSON(data, encryptionPassphrase);
+      filename = "litenav-backup.enc.json";
+    }
+    const blob = new Blob([content], { type: "application/json" });
     const urlOut = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = urlOut;
-    a.download = "bookmark_manager_backup.json";
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(urlOut);
+    if (encryptionEnabled) toast.success("已加密导出");
   };
 
   const importLocal = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,19 +223,57 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = JSON.parse(event.target?.result as string);
-        if (data.groups && data.links) {
-          useStore.getState().importData(data);
-          setStatus({ message: "导入成功", type: "success" });
+        const text = event.target?.result as string;
+        if (text.trim().startsWith('<') || text.includes('<DT') || text.trim().toLowerCase().startsWith('<!doctype')) {
+          const parsed = parseBrowserBookmarks(text);
+          if (parsed.links.length === 0) throw new Error("未解析到书签");
+          const r = useStore.getState().mergeImport(parsed);
+          setStatus({ message: `浏览器书签导入：新增 ${r.added} 条，跳过重复 ${r.skipped} 条`, type: "success" });
+          toast.success(`导入 ${r.added} 条书签`);
         } else {
-          throw new Error("格式无效");
+          const data = JSON.parse(text);
+          if (data.groups && data.links) {
+            const r = useStore.getState().mergeImport(data);
+            setStatus({ message: `导入成功：新增 ${r.added} 条，跳过重复 ${r.skipped} 条`, type: "success" });
+          } else {
+            throw new Error("格式无效");
+          }
         }
-      } catch (err) {
-        setStatus({ message: "解析文件失败", type: "error" });
+      } catch (err: any) {
+        setStatus({ message: err?.message || "解析文件失败", type: "error" });
       }
     };
     reader.readAsText(file);
-    if(fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleBrowserImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = parseBrowserBookmarks(event.target?.result as string);
+        if (parsed.links.length === 0) throw new Error("未解析到书签");
+        const r = useStore.getState().mergeImport(parsed);
+        setStatus({ message: `浏览器书签导入：新增 ${r.added} 条，跳过重复 ${r.skipped} 条`, type: "success" });
+        toast.success(`导入 ${r.added} 条书签`);
+      } catch (err: any) {
+        setStatus({ message: err?.message || "导入失败", type: "error" });
+      }
+    };
+    reader.readAsText(file);
+    if (browserImportRef.current) browserImportRef.current.value = '';
+  };
+
+  const handleAutoSyncNow = async () => {
+    try {
+      setStatus({ message: "正在同步...", type: "info" });
+      const res = await backupToWebDav();
+      setStatus({ message: res.conflict ? "同步完成（检测到远端有更新，已为你保留副本）" : "同步成功！", type: "success" });
+    } catch (err: any) {
+      setStatus({ message: err.message || "同步失败", type: "error" });
+    }
   };
 
   return (
@@ -206,6 +284,9 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         <button onClick={() => setActiveTab('theme')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'theme' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>主题外观</button>
         <button onClick={() => setActiveTab('local')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'local' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>本地备份</button>
         <button onClick={() => setActiveTab('webdav')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'webdav' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>WebDAV</button>
+        <button onClick={() => setActiveTab('tags')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'tags' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>标签</button>
+        <button onClick={() => setActiveTab('space')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'space' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>空间</button>
+        <button onClick={() => setActiveTab('privacy')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'privacy' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>隐私</button>
         <button onClick={() => setActiveTab('about')} className={`whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${activeTab === 'about' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-800'}`}>关于</button>
       </div>
 
@@ -649,16 +730,24 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         {activeTab === 'local' && (
           <motion.div key="local" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
             <section>
-              <p className="text-sm text-gray-500 mb-4">将当前全部标签和分组导出为 JSON 备份文件，或从备份文件中还原数据。</p>
-              <div className="flex gap-3">
-                <button onClick={exportLocal} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors">
-                  导出备份
+              <p className="text-sm text-gray-500 mb-4">将当前空间的全部书签、分组、标签导出为备份文件，或从备份文件中合并恢复（自动跳过重复网址）。</p>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={exportLocal} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors flex items-center gap-1">
+                  <Upload size={14} /> 导出备份{encryptionEnabled ? '（已加密）' : ''}
                 </button>
                 <button onClick={() => fileInputRef.current?.click()} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors">
-                  导入恢复
+                  导入恢复 (JSON)
+                </button>
+                <button onClick={() => browserImportRef.current?.click()} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors">
+                  从浏览器书签导入
+                </button>
+                <button onClick={() => { onClose(); onOpenTrash?.(); }} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-sm font-medium transition-colors flex items-center gap-1">
+                  <Trash2 size={14} /> 回收站（{trash.length}）
                 </button>
                 <input type="file" accept=".json" className="hidden" ref={fileInputRef} onChange={importLocal} />
+                <input type="file" accept=".json,.html,.htm" className="hidden" ref={browserImportRef} onChange={handleBrowserImport} />
               </div>
+              <p className="text-xs text-gray-400 mt-3">支持 Chrome / Edge 导出的 HTML 书签文件与 Firefox 的 bookmarks.json。导入会自动按文件夹生成分组并去重。</p>
             </section>
           </motion.div>
         )}
@@ -706,6 +795,96 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </section>
           </motion.div>
         )}
+        {activeTab === 'tags' && (
+          <motion.div key="tags" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+            <section>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><TagIcon size={15} /> 标签管理</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {tags.map(t => (
+                  <div key={t.id} className="flex items-center gap-1 pl-2 pr-1 py-1 rounded-full text-white text-xs" style={{ backgroundColor: t.color }}>
+                    <input value={t.name} onChange={(e) => updateTag(t.id, { name: e.target.value })} className="bg-transparent outline-none w-16 text-white placeholder-white/70" />
+                    <button onClick={() => deleteTag(t.id)} className="hover:bg-black/20 rounded-full p-0.5"><X size={12} /></button>
+                  </div>
+                ))}
+                {tags.length === 0 && <span className="text-xs text-gray-400">还没有标签</span>}
+              </div>
+              <div className="flex gap-2">
+                <input value={newTagInput} onChange={(e) => setNewTagInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { addTag(newTagInput); setNewTagInput(''); } }} placeholder="新建标签名称" className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500" />
+                <button onClick={() => { addTag(newTagInput); setNewTagInput(''); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">添加</button>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">标签是跨分组的弱关联归类。给书签打标签后，可在搜索框直接按标签名检索。</p>
+            </section>
+          </motion.div>
+        )}
+
+        {activeTab === 'space' && (
+          <motion.div key="space" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+            <section>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-1"><Layers size={15} /> 多空间（互不干扰的数据集）</h3>
+              <div className="space-y-2">
+                {profiles.map(p => (
+                  <div key={p.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <button onClick={() => switchProfile(p.id)} className={`flex-1 text-left px-2 py-1 rounded-lg flex items-center gap-2 transition-colors ${p.id === activeProfileId ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-700'}`}>
+                      {p.id === activeProfileId && <Check size={14} className="text-blue-600" />}
+                      <Layers size={15} /> <span className="text-sm font-medium truncate">{p.name}</span>
+                    </button>
+                    <button onClick={() => { const n = window.prompt('重命名空间', p.name); if (n != null) renameProfile(p.id, n); }} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"><Pencil size={13} /></button>
+                    {profiles.length > 1 && (
+                      <button onClick={() => { if (window.confirm(`删除空间「${p.name}」？该空间内的书签将一并删除且不可恢复。`)) deleteProfile(p.id); }} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={13} /></button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => { const n = window.prompt('新空间名称', '新空间'); if (n != null) addProfile(n); }} className="mt-3 w-full py-2 flex items-center justify-center gap-1 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"><Plus size={14} /> 新建空间</button>
+              <p className="text-xs text-gray-500 mt-3">每个空间拥有独立的书签、分组、标签与回收站，可分别绑定不同 WebDAV 账号同步。</p>
+            </section>
+          </motion.div>
+        )}
+
+        {activeTab === 'privacy' && (
+          <motion.div key="privacy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }} className="space-y-6">
+            <section>
+              <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-1"><Lock size={15} /> 端到端加密（可选）</h3>
+              <p className="text-xs text-gray-500 mb-3">开启后，同步到 WebDAV 与导出的备份都会被口令加密，连网盘服务商也无法读取你的书签。口令仅存于本次会话，刷新页面需重新输入。</p>
+              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer">
+                <span className="text-sm text-gray-700">启用端到端加密</span>
+                <input type="checkbox" checked={encryptionEnabled} onChange={(e) => setEncryptionEnabled(e.target.checked)} className="accent-blue-600 w-4 h-4" />
+              </label>
+              {encryptionEnabled && (
+                <div className="mt-2">
+                  <input type="password" value={encryptionPassphrase} onChange={(e) => setEncryptionPassphrase(e.target.value)} placeholder="设置加密口令（本地使用，不保存）" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500" />
+                </div>
+              )}
+            </section>
+            <section className="pt-2 border-t border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-1"><RefreshCw size={15} /> WebDAV 自动同步</h3>
+              <p className="text-xs text-gray-500 mb-3">开启后，数据变动会自动同步到你自己的 WebDAV（失焦 / 定时），无需手动点备份。</p>
+              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer">
+                <span className="text-sm text-gray-700">启用自动同步</span>
+                <input type="checkbox" checked={webdavAutoSync} onChange={(e) => setWebdavAutoSync(e.target.checked)} className="accent-blue-600 w-4 h-4" />
+              </label>
+              {webdavAutoSync && (
+                <button onClick={handleAutoSyncNow} className="mt-2 w-full px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors">立即同步一次</button>
+              )}
+            </section>
+            <section className="pt-2 border-t border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1"><Filter size={15} /> 书签排序方式</h3>
+              <div className="flex gap-2">
+                {([['manual', '手动排序'], ['frequent', '按使用频率'], ['recent', '按最近访问']] as const).map(([v, l]) => (
+                  <button key={v} onClick={() => setLinkSortMode(v)} className={`flex-1 px-3 py-2 rounded-lg text-sm transition-colors ${linkSortMode === v ? 'bg-blue-100 text-blue-700 font-medium' : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200'}`}>{l}</button>
+                ))}
+              </div>
+            </section>
+            <section className="pt-2 border-t border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1"><Clock size={15} /> 回收站保留期</h3>
+              <div className="flex items-center gap-3">
+                <input type="range" min="1" max="90" value={trashRetentionDays} onChange={(e) => setTrashRetentionDays(Number(e.target.value))} className="flex-1 accent-blue-600" />
+                <span className="text-sm text-blue-600 w-16 text-right">{trashRetentionDays} 天</span>
+              </div>
+            </section>
+          </motion.div>
+        )}
+
         </AnimatePresence>
 
         {status.message && (

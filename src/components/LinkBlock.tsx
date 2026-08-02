@@ -16,10 +16,16 @@ interface LinkBlockProps {
 export const LinkBlock: React.FC<LinkBlockProps> = ({ link, onEdit, onContextMenu, forceSquare }) => {
   const borderRadius = useStore(state => state.borderRadius);
   const linkLabelColor = useStore(state => state.linkLabelColor);
+  const tags = useStore(state => state.tags) || [];
+  const recordLinkClick = useStore(state => state.recordLinkClick);
 
   const [isNoteViewerOpen, setIsNoteViewerOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
   const dragStartPos = React.useRef<{x: number, y: number} | null>(null);
+
+  const linkTags = (link.tagIds || [])
+    .map(id => tags.find(t => t.id === id))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
   const {
     attributes,
@@ -92,11 +98,23 @@ export const LinkBlock: React.FC<LinkBlockProps> = ({ link, onEdit, onContextMen
                 const dy = e.clientY - dragStartPos.current.y;
                 if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                   e.preventDefault();
+                } else {
+                  recordLinkClick(link.id);
                 }
+              } else {
+                recordLinkClick(link.id);
               }
               dragStartPos.current = null;
             }}
           />
+
+          {linkTags.length > 0 && (
+            <div className="absolute top-1.5 left-1.5 z-20 flex gap-1 pointer-events-none">
+              {linkTags.slice(0, 4).map(t => (
+                <span key={t.id} title={t.name} className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: t.color }} />
+              ))}
+            </div>
+          )}
 
           {hasImage ? (
             <div className="w-full h-full flex items-center justify-center pointer-events-none">
@@ -143,6 +161,7 @@ export const LinkBlock: React.FC<LinkBlockProps> = ({ link, onEdit, onContextMen
           style={{ color: linkLabelColor }}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => recordLinkClick(link.id)}
         >
           {link.title}
         </a>
